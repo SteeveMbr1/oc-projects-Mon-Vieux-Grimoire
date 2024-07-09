@@ -1,21 +1,139 @@
 const express = require('express')
+const multer = require('multer');
+const Book = require('../models/book')
 
 const router = express.Router()
+const upload = multer()
 
 router.get('/', (req, res) => {
-    res.json({msg: 'get all'})
+    res.json([
+        {
+            _id:"dmslfmldf",
+            userId: "dfg4z54g7g",
+            title: "Un livre",
+            author: "Jean de la Fontaine",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 2017,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "dfg4z54g7g",
+                    grade: 3,
+                }
+            ],
+            averageRating: 3,
+        },
+        {
+            _id:"dsddfd",
+            userId: "dfg4z5fd7g",
+            title: "Un autre livre",
+            author: "Guy de Maupassant",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 1802,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "dfg4z5fd7g",
+                    grade: 4,
+                }
+            ],
+            averageRating: 4,
+        },
+        {
+            _id:"45sd1fds1",
+            userId: "t1f4z54g7g",
+            title: "Un livre",
+            author: "Victor Hugo",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 2017,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "t1f4z54g7g",
+                    grade: 2,
+                }
+            ],
+            averageRating: 3.2,
+        },
+    ])
 })
 
 router.get('/bestrating', (req, res) => {
-    res.json({msg: 'get the three best rated books'})
+    res.json([
+        {
+            _id:"dmslfmldf",
+            userId: "dfg4z54g7g",
+            title: "Un livre",
+            author: "Jean de la Fontaine",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 2017,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "dfg4z54g7g",
+                    grade: 3,
+                }
+            ],
+            averageRating: 3,
+        },
+        {
+            _id:"dsddfd",
+            userId: "dfg4z5fd7g",
+            title: "Un autre livre",
+            author: "Guy de Maupassant",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 1802,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "dfg4z5fd7g",
+                    grade: 4,
+                }
+            ],
+            averageRating: 4,
+        },
+        {
+            _id:"45sd1fds1",
+            userId: "t1f4z54g7g",
+            title: "Un livre",
+            author: "Victor Hugo",
+            imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+            year: 2017,
+            genre: "roman",
+            ratings: [
+                {
+                    userId: "t1f4z54g7g",
+                    grade: 2,
+                }
+            ],
+            averageRating: 3.2,
+        },
+    ])
 })
 
 router.get('/:id', (req, res) => {
-    res.json({msg: 'get one book'})
+    res.json({
+        _id:"dsddfd",
+        userId: "dfg4z5fd7g",
+        title: "Un autre livre",
+        author: "Guy de Maupassant",
+        imageUrl: "https://smartmobilestudio.com/wp-content/uploads/2012/06/leather-book-preview.png",
+        year: 1802,
+        genre: "roman",
+        ratings: [
+            {
+                userId: "dfg4z5fd7g",
+                grade: 4,
+            }
+        ],
+        averageRating: 4,
+    })
 })
 
-router.post('/', (req, res) => {
-    res.json({msg: 'Add a new book'})
+router.post('/', upload.any(), (req, res) => {
+    const formData = req.body
+
+    console.log(formData);
 })
 
 
@@ -30,8 +148,6 @@ router.delete('/:id', (req, res) => {
 router.post('/:id/rating', (req, res) => {
     res.json({msg: 'Rate a book'})
 })
-
-
 
 
 module.exports = router
