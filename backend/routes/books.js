@@ -1,9 +1,23 @@
 const express = require('express')
 const multer = require('multer');
 const Book = require('../models/book')
+const slugify = require('../utils/slugify')
 
 const router = express.Router()
-const upload = multer()
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    const book = JSON.parse(req.body.book)
+    const ext = file.mimetype.split('/')[1]
+    const filename = slugify(book.author) + '_' + slugify(book.title) + '.' + ext
+    cb(null, filename)
+  }
+})
+
+const upload = multer({ storage: storage })
 
 router.get('/', (req, res) => {
     res.json([
@@ -130,12 +144,11 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.post('/', upload.any(), (req, res) => {
-    const formData = req.body
-
-    console.log(formData);
+router.post('/', upload.single('image'), (req, res) => {
+    const book = JSON.parse(req.body.book)
+    book.imageUrl = req.file.path
+    res.json(book);
 })
-
 
 router.put('/:id', (req, res) => {
     res.json({msg: 'Update a book'})
