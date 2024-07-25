@@ -1,6 +1,6 @@
 const Book = require('../models/book')
-const {path} = require('path')
-const fs = require('fs')
+const fs = require('node:fs')
+const path = require('node:path')
 
 /**
  * Create one book
@@ -55,10 +55,13 @@ exports.updateBook = async (req, res) => {
 
     data.userId = req.auth.userId
     data.imageUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : data.imageUrl
-
-    Book.findByIdAndUpdate(req.params.id, data)
-        .then( book => res.json(book))
-        .catch(error => res.json(error))
+    console.log('log say :', req.file);
+    try {
+        const book = await Book.findByIdAndUpdate(req.params.id, data, { new: true })
+        res.json(book)
+    } catch (error) {
+        res.json(error)
+    }
 }
 
 
@@ -68,7 +71,15 @@ exports.updateBook = async (req, res) => {
  */
 exports.deleteBook = (req, res) => {
     Book.findOneAndDelete({_id : req.params.id})
-        .then( book => res.json(book))
+        .then( book => {
+            const filename = path.resolve(
+                path.dirname(__dirname),
+                process.env.UPLOAD_IMG_PATH,
+                path.basename(book.imageUrl)
+            );
+            fs.unlinkSync(filename)
+            res.json(book)
+        })
         .catch(error => res.json({error : error}))
 }
 
@@ -78,6 +89,12 @@ exports.deleteBook = (req, res) => {
  */
 exports.rateBook = async (req, res) => {
     const book = await Book.findById(req.params.id)
+
+    const rating = book.ratings.find((b) => b.userId == req.body.userId)
+    if ( rating ) {
+        return res.status(400).json(book)
+    }
+
     book.ratings.push({
         userId : req.body.userId,
         grade: req.body.rating
